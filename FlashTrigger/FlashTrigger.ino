@@ -45,7 +45,7 @@ void TriggeredMaster() {
             keyboard.press(KEY_RETURN);
             // Cycle line to flash high low. 
             digitalWrite(pinFlash) = HIGH;
-            delay(100);
+            delay(20);
             digitalWrite(pinFlash) = LOW;
             keyboard.releaseAll();
             delay(1000);
@@ -55,7 +55,7 @@ void TriggeredMaster() {
             keyboard.press(KEY_F5);
             // Cycle line to flash high low. 
             digitalWrite(pinFlash) = HIGH;
-            delay(100);
+            delay(20);
             digitalWrite(pinFlash) = LOW;
             keyboard.releaseAll();
             delay(1000);
@@ -64,7 +64,7 @@ void TriggeredMaster() {
             // No keyboard press
             // Cycle line to flash high low. 
             digitalWrite(pinFlash) = HIGH;
-            delay(100);
+            delay(20);
             digitalWrite(pinFlash) = LOW;
             delay(1000);
         }
@@ -80,5 +80,4 @@ void TriggeredSlave() {
     delay(100);
     digitalWrite(pinFlash) = LOW;
     delay(1000);
-
 }
