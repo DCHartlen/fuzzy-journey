@@ -37,6 +37,7 @@ unsigned long delayCountTimeUnits = 0;
 //Trigger Flags
 bool flagMasterTrigger = false;
 bool flagSlaveTrigger = false;
+unsigned long lastTrigger = 0;
 
 // Define screen
 SerLCD lcd;
@@ -48,7 +49,7 @@ void setup() {
     Keyboard.begin();
     // Set start button as an interrupt
     pinMode(pinStart, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(pinStart),TriggeredMaster, FALLING);
+    attachInterrupt(digitalPinToInterrupt(pinStart),TriggeredMaster, CHANGE);
     // set external trigger as interrupt
     pinMode(pinExternalTrigger, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(pinExternalTrigger),TriggeredSlave, CHANGE);
@@ -83,7 +84,7 @@ void setup() {
         lcd.setCursor(0,0);
         lcd.print("SLAVE DELAY us");
     }
-    lcd.setCursor(7,1);
+    lcd.setCursor(6,1);
 }
 
 // Main loop. Only handles setting of the delay
@@ -107,7 +108,7 @@ void loop() {
             Keyboard.releaseAll();
             delay(1000);
         }
-        if(digitalRead(pinF5Key) == LOW) {
+        else if(digitalRead(pinF5Key) == LOW) {
           Serial.println("F5?");
             //Keyboard write
             Keyboard.press(KEY_F5);
@@ -123,7 +124,7 @@ void loop() {
             Keyboard.releaseAll();
             delay(1000);
         }
-        if(digitalRead(pinNoKey) == LOW) {
+        else if(digitalRead(pinNoKey) == LOW) {
             Serial.println("NOKEY?");
             // No Keyboard press
             // Cycle line to flash high low. 
@@ -170,12 +171,14 @@ void loop() {
     }
 }
 
-// TODO: Figure out delay here. 
 // Interrupt service routine for button trigger
 void TriggeredMaster() {
     // Switch in master mode (HIGH), execute. Do not execute in slave mode
-    if (digitalRead(pinModeSelect) == HIGH) {
-        flagMasterTrigger=true;
+    if ((millis() - lastTrigger) >= 4000) { //Kludge to prevent double fire
+        if (digitalRead(pinModeSelect) == HIGH) {
+            lastTrigger = millis();
+            flagMasterTrigger=true;
+        }
     }
 }
 
@@ -187,7 +190,6 @@ void TriggeredSlave() {
 }
 
 void ChangeMode() {
-    delay(50);
     nominalDelay = 0;
     lcd.clear();
     if(digitalRead(pinModeSelect) == HIGH) {    //Master
@@ -198,5 +200,5 @@ void ChangeMode() {
         lcd.setCursor(0,0);
         lcd.print("SLAVE DELAY us");
     }
-    lcd.setCursor(7,1);
+    lcd.setCursor(6,1);
 }
