@@ -133,16 +133,9 @@ void loop() {
             digitalWrite(pinFlash, LOW);
             delay(1000);
         }
-//        if(digitalRead(pinUndefinedKey) == LOW) {
-//            Serial.println("UNDEF?");
-//            // No Keyboard press
-//            // Cycle line to flash high low. 
-//            digitalWrite(pinFlash, HIGH);
-//            delay(20);
-//            digitalWrite(pinFlash, LOW);
-//            delay(1000);
-//        }
     }
+    
+    // If slave trigger as activated
     if (flagSlaveTrigger == true){
         flagSlaveTrigger = false;
         // Cycle line to flash high low. 
@@ -150,12 +143,15 @@ void loop() {
         while ((delayCountTimeUnits - delayStartTimeUnits) < actualDelay) {
             delayCountTimeUnits = micros();
         }
+        Serial.println("SLAVE FIRE!");
         digitalWrite(pinFlash, HIGH);
-        delay(100);
+        delay(200);
         digitalWrite(pinFlash, LOW);
         delay(1000);
     }
+    // update the LCD screen
     char lcdBuff[16];
+    bool flag;
     currentMillis = millis();
     if ((currentMillis-lastMillis) >= updatePeriod) {
         // update delay in 10 micro increments
@@ -184,9 +180,12 @@ void TriggeredMaster() {
 
 // Interrupt service routine for slaved trigger
 void TriggeredSlave() {
+  if ((millis() - lastTrigger) >= 4000) { //Kludge to prevent double fire
     if (digitalRead(pinSlaveArm) == HIGH){
+        lastTrigger=millis();
         flagSlaveTrigger=true;
     }
+  }
 }
 
 void ChangeMode() {
