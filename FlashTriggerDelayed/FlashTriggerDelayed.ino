@@ -11,7 +11,7 @@ Encoder delayEncoder(pinEncoderA, pinEncoderB);
 
 // Trigger rleated pins
 const int pinStart = A3;    // start Button input
-const int pinExternalTrigger = A4;   // trigger signal when used as slave
+const int pinExternalTrigger = 4;   // trigger signal when used as slave
 const int pinSlaveArm = A5;
 const int pinModeSelect = A2;    // Select master-slave mode
 const int pinEnterKey = A1;  // rotary switch, Keyboard "return"
@@ -49,10 +49,10 @@ void setup() {
     Keyboard.begin();
     // Set start button as an interrupt
     pinMode(pinStart, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(pinStart),TriggeredMaster, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(pinStart), TriggeredMaster, CHANGE);
     // set external trigger as interrupt
     pinMode(pinExternalTrigger, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(pinExternalTrigger),TriggeredSlave, CHANGE);
+    attachInterrupt((pinExternalTrigger), TriggeredSlave, CHANGE);
     // 
     pinMode(pinSlaveArm, INPUT_PULLUP);
     pinMode(pinEnterKey, INPUT_PULLUP);
@@ -143,8 +143,8 @@ void loop() {
         while ((delayCountTimeUnits - delayStartTimeUnits) < actualDelay) {
             delayCountTimeUnits = micros();
         }
-        Serial.println("SLAVE FIRE!");
         digitalWrite(pinFlash, HIGH);
+        Serial.println("SLAVE FIRE!");
         delay(200);
         digitalWrite(pinFlash, LOW);
         delay(1000);
@@ -165,6 +165,7 @@ void loop() {
         sprintf(lcdBuff,"%04d",nominalDelay);
         lcd.print(lcdBuff);
     }
+    
 }
 
 // Interrupt service routine for button trigger
